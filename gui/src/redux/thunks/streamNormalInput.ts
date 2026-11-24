@@ -126,9 +126,12 @@ export const streamNormalInput = createAsyncThunk<
       };
     }
 
+    // Fork: thinking is controlled only by each model's config
+    // (defaultCompletionOptions.reasoning). The session toggle is ignored so it
+    // can neither turn thinking off nor cap it with a reasoning budget.
     completionOptions = buildReasoningCompletionOptions(
       completionOptions,
-      state.session.hasReasoningEnabled,
+      undefined,
       selectedChatModel,
     );
 
