@@ -235,6 +235,13 @@ export const PROVIDER_TOOL_SUPPORT: Record<string, (model: string) => boolean> =
       const ollamaFn = PROVIDER_TOOL_SUPPORT["ollama"];
       return ollamaFn(model) || ollamaFn(normalized);
     },
+    // llama-server supports native tool calling on /v1/chat/completions when
+    // started with --jinja (the default in recent builds). The model name is
+    // whatever the user configured (often a GGUF file name such as
+    // "Qwen3-32B-Q4_K_M"), so reuse LM Studio's hyphen-tolerant heuristic.
+    "llama.cpp": (model) => {
+      return PROVIDER_TOOL_SUPPORT["lmstudio"](model);
+    },
     sambanova: (model) => {
       // https://docs.sambanova.ai/cloud/docs/capabilities/function-calling
       if (

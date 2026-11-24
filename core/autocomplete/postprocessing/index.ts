@@ -140,7 +140,7 @@ export function postprocessCompletion({
     }
   }
 
-  if (llm.model.includes("qwen3")) {
+  if (/qwen-?3/i.test(llm.model)) {
     // Qwen3 always starts from special thinking markers, and we don't want them to output these contents
     // Remove all content from "
     completion = completion.replace(/<think>.*?<\/think>/s, "");

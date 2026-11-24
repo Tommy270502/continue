@@ -378,6 +378,33 @@ describe("Configuration", () => {
     });
   });
 
+  describe("llama.cpp api base", () => {
+    it("should default to llama-server's port 8080 with /v1", () => {
+      const llamacpp = constructLlmApi({ provider: "llama.cpp" });
+      expect((llamacpp as OpenAIApi).openai.baseURL).toBe(
+        "http://localhost:8080/v1/",
+      );
+    });
+    it("should append /v1 to a root apiBase", () => {
+      const llamacpp = constructLlmApi({
+        provider: "llama.cpp",
+        apiBase: "http://127.0.0.1:8080/",
+      });
+      expect((llamacpp as OpenAIApi).openai.baseURL).toBe(
+        "http://127.0.0.1:8080/v1/",
+      );
+    });
+    it("should not reappend /v1 if already present", () => {
+      const llamacpp = constructLlmApi({
+        provider: "llama.cpp",
+        apiBase: "http://127.0.0.1:8080/v1",
+      });
+      expect((llamacpp as OpenAIApi).openai.baseURL).toBe(
+        "http://127.0.0.1:8080/v1/",
+      );
+    });
+  });
+
   describe("bedrock authentication", () => {
     it("should configure Bedrock with API key authentication", () => {
       const bedrock = constructLlmApi({

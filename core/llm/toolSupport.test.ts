@@ -277,6 +277,32 @@ describe("PROVIDER_TOOL_SUPPORT", () => {
     });
   });
 
+  describe("llama.cpp", () => {
+    const supportsFn = PROVIDER_TOOL_SUPPORT["llama.cpp"];
+
+    it("should support Qwen3-family models in their various spellings", () => {
+      expect(supportsFn("qwen3.8-27b")).toBe(true);
+      expect(supportsFn("qwen3.5-35b-a3b")).toBe(true);
+      expect(supportsFn("Qwen3-32B-Q4_K_M")).toBe(true);
+      expect(supportsFn("Qwen3-Coder-30B-A3B-Instruct-UD-Q4_K_XL.gguf")).toBe(
+        true,
+      );
+      expect(supportsFn("qwen2.5-coder-7b")).toBe(true);
+    });
+
+    it("should support other tool-capable GGUF models", () => {
+      expect(supportsFn("Meta-Llama-3.1-8B-Instruct-Q8_0")).toBe(true);
+      expect(supportsFn("gpt-oss-20b")).toBe(true);
+      expect(supportsFn("Devstral-Small-2507")).toBe(true);
+    });
+
+    it("should not support models without tool calling", () => {
+      expect(supportsFn("Qwen2.5-Math-7B")).toBe(false);
+      expect(supportsFn("starcoder2-3b")).toBe(false);
+      expect(supportsFn("tinyllama")).toBe(false);
+    });
+  });
+
   describe("xAI", () => {
     const supportsFn = PROVIDER_TOOL_SUPPORT["xAI"];
 

@@ -182,7 +182,12 @@ export function constructLlmApi(config: LLMConfig): BaseLlmApi | undefined {
       return new ClawRouterApi(config);
     case "llama.cpp":
     case "llamafile":
-      return openAICompatible("http://localhost:8000/", config);
+      // llama-server/llamafile listen on :8080 by default and serve the
+      // OpenAI-compatible API under /v1 (the native /completion endpoint lives
+      // at the root, so users often configure apiBase without /v1)
+      if (config.apiBase)
+        config.apiBase = appendPathToUrlIfNotPresent(config.apiBase, "v1");
+      return openAICompatible("http://localhost:8080/v1/", config);
     case "lmstudio":
       return openAICompatible("http://localhost:1234/", config);
     case "ollama":

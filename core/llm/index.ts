@@ -965,6 +965,8 @@ export abstract class BaseLLM implements ILLM {
 
   protected modifyChatBody(
     body: ChatCompletionCreateParams,
+    // Optional so existing overrides that only take `body` stay valid
+    _options?: CompletionOptions,
   ): ChatCompletionCreateParams {
     return body;
   }
@@ -1192,7 +1194,7 @@ export abstract class BaseLLM implements ILLM {
             includeReasoningDetailsField: this.supportsReasoningDetailsField,
             includeReasoningContentField: this.supportsReasoningContentField,
           });
-          body = this.modifyChatBody(body);
+          body = this.modifyChatBody(body, completionOptions);
 
           if (logEnabled) {
             interaction?.logItem({

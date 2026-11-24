@@ -524,7 +524,15 @@ export function getTemplateForModel(model: string): AutocompleteTemplate {
     return mercuryMultifileFimTemplate;
   }
 
-  if (lowerCaseModel.includes("qwen") && lowerCaseModel.includes("coder")) {
+  // Qwen2.5+/Qwen3 tokenizers (coder and general models alike) use the
+  // <|fim_prefix|>/<|fim_suffix|>/<|fim_middle|> tokens. Older CodeQwen1.5
+  // uses StarCoder-style tokens and is handled below. The lookahead keeps
+  // parameter counts like "qwen-7b" (Qwen 1) from matching.
+  if (
+    lowerCaseModel.includes("qwen") &&
+    (lowerCaseModel.includes("coder") ||
+      /qwen-?[2-9](?:\.\d+)?(?!\d*b)/.test(lowerCaseModel))
+  ) {
     return qwenMultifileFimTemplate;
   }
 

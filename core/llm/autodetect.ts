@@ -74,6 +74,9 @@ const PROVIDER_HANDLES_TEMPLATING: string[] = [
   "nous",
   "zAI",
   "tensorix",
+  // llama-server applies the model's own chat template on /v1/chat/completions
+  // (set `template` explicitly to fall back to client-side templating)
+  "llama.cpp",
   // TODO add these, change to inverted logic so only the ones that need templating are hardcoded
   // Asksage.ts
   // Azure.ts
@@ -91,7 +94,6 @@ const PROVIDER_HANDLES_TEMPLATING: string[] = [
   // HuggingFaceTGI.ts
   // Inception.ts
   // Kindo.ts
-  // LlamaCpp.ts
   // LlamaStack.ts
   // Llamafile.ts
   // Mock.ts
@@ -227,8 +229,25 @@ function modelSupportsReasoning(
   if (model.model.includes("grok-4")) {
     return true;
   }
+  if (isQwen3ThinkingModel(model.model)) {
+    return true;
+  }
 
   return false;
+}
+
+/**
+ * Qwen3-family models (qwen3, qwen3.5, Qwen3-32B, ...) are hybrid reasoning
+ * models that think by default and accept `enable_thinking`. Coder and
+ * "-Instruct" (e.g. Qwen3-...-Instruct-2507) variants are non-thinking.
+ */
+function isQwen3ThinkingModel(modelName: string): boolean {
+  const lower = modelName.toLowerCase();
+  return (
+    /qwen-?3/.test(lower) &&
+    !lower.includes("coder") &&
+    !lower.includes("instruct")
+  );
 }
 
 const PARALLEL_PROVIDERS: string[] = [

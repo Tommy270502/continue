@@ -1,5 +1,10 @@
 import { describe, expect, it, test } from "vitest";
-import { autodetectTemplateType, modelSupportsNextEdit } from "./autodetect";
+import {
+  autodetectTemplateFunction,
+  autodetectTemplateType,
+  modelSupportsNextEdit,
+  modelSupportsReasoning,
+} from "./autodetect";
 
 test("autodetectTemplateType returns 'codellama-70b' for CodeLlama 70B models", () => {
   expect(autodetectTemplateType("codellama-70b")).toBe("codellama-70b");
@@ -335,5 +340,51 @@ describe("modelSupportsNextEdit", () => {
         ),
       ).toBe(true);
     });
+  });
+});
+
+describe("Qwen3 / llama.cpp", () => {
+  const md = (model: string, extra: Record<string, any> = {}) =>
+    ({ title: model, provider: "llama.cpp", model, ...extra }) as any;
+
+  it("uses chatml as the client-side template type for Qwen models", () => {
+    expect(autodetectTemplateType("qwen3.8-27b")).toBe("chatml");
+    expect(autodetectTemplateType("Qwen3-32B-Q4_K_M")).toBe("chatml");
+  });
+
+  it("lets llama-server apply the chat template unless one is set explicitly", () => {
+    expect(autodetectTemplateFunction("qwen3.8-27b", "llama.cpp")).toBeNull();
+    expect(
+      autodetectTemplateFunction("qwen3.8-27b", "llama.cpp", "chatml"),
+    ).toBeTypeOf("function");
+    // llamafile still templates client-side
+    expect(autodetectTemplateFunction("qwen3.8-27b", "llamafile")).toBeTypeOf(
+      "function",
+    );
+  });
+
+  it("detects Qwen3 hybrid thinking models as reasoning-capable", () => {
+    expect(modelSupportsReasoning(md("qwen3.8-27b"))).toBe(true);
+    expect(modelSupportsReasoning(md("qwen3.5-35b-a3b"))).toBe(true);
+    expect(modelSupportsReasoning(md("Qwen3-32B-Q4_K_M"))).toBe(true);
+    expect(modelSupportsReasoning(md("qwen3:8b"))).toBe(true);
+  });
+
+  it("does not flag non-thinking Qwen variants", () => {
+    expect(modelSupportsReasoning(md("Qwen3-Coder-30B-A3B-Instruct"))).toBe(
+      false,
+    );
+    expect(modelSupportsReasoning(md("qwen3-30b-a3b-instruct-2507"))).toBe(
+      false,
+    );
+    expect(modelSupportsReasoning(md("qwen2.5-coder-7b"))).toBe(false);
+  });
+
+  it("respects an explicit completionOptions.reasoning override", () => {
+    expect(
+      modelSupportsReasoning(
+        md("qwen3.8-27b", { completionOptions: { reasoning: false } }),
+      ),
+    ).toBe(false);
   });
 });
