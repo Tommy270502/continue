@@ -7,6 +7,8 @@ import { isSecurityConcern } from "core/indexing/ignore";
 import { LRUCache } from "lru-cache";
 import * as vscode from "vscode";
 
+import { EXTENSION_OUTPUT_CHANNEL_PREFIX } from "../util/extensionId";
+
 /**
  * Service to keep track of recently visited ranges in files.
  */
@@ -104,9 +106,7 @@ export class RecentlyVisitedRangesService {
           (s.filepath !== currentFilepath &&
             // Exclude Continue's own output as it makes it super-hard for users to test the autocomplete feature
             // while looking at the prompts in the Continue's output
-            !s.filepath.startsWith(
-              "output:extension-output-Continue.continue",
-            )),
+            !s.filepath.startsWith(EXTENSION_OUTPUT_CHANNEL_PREFIX)),
       )
       .sort((a, b) => b.timestamp - a.timestamp)
       .map(({ timestamp, ...snippet }) => snippet);

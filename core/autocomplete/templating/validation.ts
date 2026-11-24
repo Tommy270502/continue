@@ -28,7 +28,9 @@ export const isValidSnippet = (snippet: AutocompleteSnippet): boolean => {
 
   if (
     (snippet as AutocompleteCodeSnippet).filepath?.startsWith(
-      "output:extension-output-Continue.continue",
+      // Must match the VS Code extension ID (EXTENSION_ID in
+      // extensions/vscode/src/util/extensionId.ts)
+      "output:extension-output-tommy270502.continue-custom",
     )
   ) {
     return false;

@@ -2,6 +2,8 @@ import { machineIdSync } from "node-machine-id";
 import * as URI from "uri-js";
 import * as vscode from "vscode";
 
+import { EXTENSION_ID } from "./extensionId";
+
 export function translate(range: vscode.Range, lines: number): vscode.Range {
   return new vscode.Range(
     range.start.line + lines,
@@ -22,7 +24,7 @@ export function getNonce() {
 }
 
 export function getExtensionUri(): vscode.Uri {
-  return vscode.extensions.getExtension("Continue.continue")!.extensionUri;
+  return vscode.extensions.getExtension(EXTENSION_ID)!.extensionUri;
 }
 
 export function getViewColumnOfFile(
