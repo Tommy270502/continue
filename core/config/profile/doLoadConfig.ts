@@ -348,6 +348,8 @@ export default async function doLoadConfig(options: {
       newConfig.allowAnonymousTelemetry = false;
     }
   }
+  // Personal fork: there is no telemetry backend; always report it as off.
+  newConfig.allowAnonymousTelemetry = false;
 
   // Setup IdeInfoService
   IdeInfoService.setup(uniqueId, ideInfo);

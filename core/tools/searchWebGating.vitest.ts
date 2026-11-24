@@ -2,7 +2,7 @@ import { expect, test } from "vitest";
 import { BuiltInToolNames } from "./builtIn";
 import { getConfigDependentToolDefinitions } from "./index";
 
-test("searchWeb tool is always available", async () => {
+test("searchWeb tool is not offered (hosted proxy retired)", async () => {
   const tools = await getConfigDependentToolDefinitions({
     rules: [],
     enableExperimentalTools: false,
@@ -14,6 +14,5 @@ test("searchWeb tool is always available", async () => {
   const searchWebTool = tools.find(
     (tool) => tool.function.name === BuiltInToolNames.SearchWeb,
   );
-  expect(searchWebTool).toBeDefined();
-  expect(searchWebTool?.displayTitle).toBe("Search Web");
+  expect(searchWebTool).toBeUndefined();
 });

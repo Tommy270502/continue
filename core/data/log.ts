@@ -18,6 +18,8 @@ import { joinPathsToUri } from "../util/uri.js";
 
 const DEFAULT_DEV_DATA_LEVEL: DataLogLevel = "all";
 export const LOCAL_DEV_DATA_VERSION = "0.2.0";
+// Personal fork: never POST dev data to remote destinations.
+const REMOTE_DEV_DATA_DISABLED = true;
 export class DataLogger {
   private static instance: DataLogger | null = null;
   core?: Core;
@@ -182,6 +184,15 @@ export class DataLogger {
       const parsed = await this.parseEventData(event, schema, level);
 
       const uriComponents = URI.parse(dataConfig.destination);
+
+      // Personal fork: remote (http/https) dev-data sinks are disabled so no
+      // usage data ever leaves the machine. Local file:// sinks still work.
+      if (
+        REMOTE_DEV_DATA_DISABLED &&
+        (uriComponents.scheme === "https" || uriComponents.scheme === "http")
+      ) {
+        return;
+      }
 
       // Send to remote server
       if (uriComponents.scheme === "https" || uriComponents.scheme === "http") {

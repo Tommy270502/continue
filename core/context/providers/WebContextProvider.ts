@@ -7,12 +7,20 @@ import {
 } from "../..";
 import { getHeaders } from "../../continueServer/stubs/headers";
 const TRIAL_PROXY_URL = "https://proxy-server-blue-l6vsfbzhba-uw.a.run.app";
+const HOSTED_WEB_SEARCH_DISABLED = true;
 
 export const fetchSearchResults = async (
   query: string,
   n: number,
   fetchFn: FetchFunction,
 ): Promise<ContextItem[]> => {
+  // Personal fork: web search went through Continue's hosted proxy (now
+  // retired), which also received the machine's unique ID. Never call it.
+  if (HOSTED_WEB_SEARCH_DISABLED) {
+    throw new Error(
+      "Web search is unavailable: it relied on Continue's retired hosted proxy.",
+    );
+  }
   const resp = await fetchFn(WebContextProvider.ENDPOINT, {
     method: "POST",
     headers: {

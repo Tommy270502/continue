@@ -57,7 +57,9 @@ export class ConfigYamlDocumentLinkProvider
           const resolvedPath = path.resolve(parentPath, slug);
           linkUri = vscode.Uri.file(resolvedPath);
         } else {
-          linkUri = vscode.Uri.parse(`https://continue.dev/${slug}`);
+          // Personal fork: hub slugs used to link to the retired Continue hub
+          // (https://continue.dev/<slug>); don't create dead links.
+          continue;
         }
 
         const link = new vscode.DocumentLink(range, linkUri);

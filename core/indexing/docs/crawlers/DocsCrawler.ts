@@ -7,6 +7,8 @@ import { ChromiumCrawler, ChromiumInstaller } from "./ChromiumCrawler";
 import { DefaultCrawler } from "./DefaultCrawler";
 import GitHubCrawler from "./GitHubCrawler";
 
+const HOSTED_CRAWLER_DISABLED = true;
+
 export type PageData = {
   url: string;
   path: string;
@@ -48,7 +50,9 @@ class DocsCrawler {
       return "github";
     }
 
-    if (!this.useLocalCrawling) {
+    // Personal fork: the hosted Continue crawl proxy is retired and would
+    // receive the machine's unique ID, so always crawl locally.
+    if (!this.useLocalCrawling && !HOSTED_CRAWLER_DISABLED) {
       try {
         const pageData = await new DefaultCrawler(
           startUrl,

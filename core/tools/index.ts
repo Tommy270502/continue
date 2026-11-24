@@ -24,7 +24,8 @@ export const getConfigDependentToolDefinitions = async (
   tools.push(await toolDefinitions.requestRuleTool(params));
   tools.push(await toolDefinitions.readSkillTool(params));
 
-  tools.push(toolDefinitions.searchWebTool);
+  // Personal fork: search_web depended on Continue's retired hosted proxy, so
+  // it is no longer offered to the model (see WebContextProvider).
 
   if (enableExperimentalTools) {
     tools.push(
